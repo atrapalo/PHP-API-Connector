@@ -30,19 +30,17 @@
  *
  */
 
-require_once '/Response.php';
-
 class APIService
 {
     protected $application_id, $endpoint;
 
     public function __construct($application_id, $endpoint)
     {
-	    $this->application_id = $application_id;
+        $this->application_id = $application_id;
         $this->endpoint = $endpoint;
     }
 
-	// JL executes an api command.
+    // JL executes an api command.
     final public function executeCommand($command_name, $parameters, $timeout = 5)
     {
         $parameters["app_api_key"] = $this->application_id;
@@ -69,5 +67,3 @@ class APIService
         return new Response($xml_data, $timeout);
     }
 }
-
-?>

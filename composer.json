@@ -1,0 +1,14 @@
+{
+    "name": "atrapalo/majesticseo-php-api-connector",
+    "description": "Connector code for using MajesticSEO API in PHP",
+    "authors": [
+        {
+            "name": "Christian Soronellas",
+            "email": "christian.soronellas@atrapalo.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "classmap": ["majesticseo_external_rpc/majesticseo-external-rpc"]
+    }
+}

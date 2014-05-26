@@ -30,38 +30,28 @@
  *
  */
 
-class DataTable {
-
+class DataTable
+{
     protected $tableName;
     protected $tableHeaders;
     protected $tableParams;
     protected $tableRows;
 
-    # Constructs a new instance of the DataTable class.
-    public function __construct() {
+    public function __construct()
+    {
         $this->tableName = "";
         $this->tableHeaders = array();
         $this->tableParams = array();
         $this->tableRows = array();
     }
 
-    # Set table's name
-    public function setTableName($name) {
-        $this->tableName = $name;
-    }
-
-    # Set table's headers
-    public function setTableHeaders($headers) {
-        $this->tableHeaders = $this->split($headers);
-    }
-
-    # Set table's parameters
-    public function setTableParams($name, $value) {
+    public function setTableParams($name, $value)
+    {
         $this->tableParams[$name] = $value;
     }
 
-    # Set table's rows
-    public function setTableRow($row) {
+    public function setTableRow($row)
+    {
         $rowsHash = array();
         $elements = $this->split($row);
         for ($i = 0; $i < count($elements); $i++) {
@@ -75,8 +65,28 @@ class DataTable {
         array_push($this->tableRows, $rowsHash);
     }
 
-    # Splits the input from pipe separated form into an array.
-    private function split($value) {
+    public function getTableName()
+    {
+        return $this->tableName;
+    }
+
+    public function setTableName($name)
+    {
+        $this->tableName = $name;
+    }
+
+    public function getTableHeaders()
+    {
+        return $this->tableHeaders;
+    }
+
+    public function setTableHeaders($headers)
+    {
+        $this->tableHeaders = $this->split($headers);
+    }
+
+    private function split($value)
+    {
         $array = preg_split("/(?<!\|)\|(?!\|)/", $value, -1);
 
         for ($i = 0; $i < count($array); $i++) {
@@ -86,23 +96,13 @@ class DataTable {
         return $array;
     }
 
-    # Returns the table's name
-    public function getTableName() {
-        return $this->tableName;
-    }
-
-    # Returns the table's headers
-    public function getTableHeaders() {
-        return $this->tableHeaders;
-    }
-
-    # Returns the table's parameters
-    public function getParams() {
+    public function getParams()
+    {
         return $this->tableParams;
     }
 
-    # Returns a specific parameter from the table's parameters
-    public function getParamForName($name) {
+    public function getParamForName($name)
+    {
         if (!array_key_exists($name, $this->tableParams)) {
             return NULL;
         }
@@ -110,16 +110,13 @@ class DataTable {
         return $this->tableParams[$name];
     }
 
-    # Returns the number of rows in the table
-    public function getRowCount() {
+    public function getRowCount()
+    {
         return count($this->tableRows);
     }
 
-    # Returns the table's rows
-    public function getTableRows() {
+    public function getTableRows()
+    {
         return $this->tableRows;
     }
-
 }
-
-?>

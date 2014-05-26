@@ -30,16 +30,15 @@
  *
  */
 
-require_once '/DataTable.php';
-
-class Response {
-
+class Response
+{
     protected $responseAttributes;
     protected $params;
     protected $tables;
 
     # Constructs a new instance of the Response class
-    public function __construct($xml_data = NULL, $timeout = 5) {
+    public function __construct($xml_data = NULL, $timeout = 5)
+    {
         $this->responseAttributes = array();
         $this->params = array();
         $this->tables = array();
@@ -49,21 +48,8 @@ class Response {
         }
     }
 
-    # Failed response constructor
-    public function constructFailedResponse($code = NULL, $errorMessage = NULL) {
-        $this->responseAttributes = array();
-        $this->params = array();
-        $this->tables = array();
-        
-        if ($code != NULL && $errorMessage != NULL) {
-            $this->responseAttributes["Code"] = $code;
-            $this->responseAttributes["ErrorMessage"] = $errorMessage;
-            $this->responseAttributes["FullError"] = $errorMessage;
-        }
-    }
-
-    # Parses the response xml, storing the result internally
-    private function importData($xml_data, $timeout) {
+    private function importData($xml_data, $timeout)
+    {
         $reader = new XMLReader();
         $reader->open($xml_data, "UTF-8");
         $dataTable = null;
@@ -72,41 +58,41 @@ class Response {
         $end = $start + $timeout;
 
         while ($reader->read()) {
-            if(time() <= $end) {
-                if($reader->nodeType == XMLREADER::ELEMENT) {
+            if (time() <= $end) {
+                if ($reader->nodeType == XMLREADER::ELEMENT) {
                     switch ($reader->name) {
-                       case "Result":
-                           $this->responseAttributes["Code"] = $reader->getAttribute("Code");
-                           $this->responseAttributes["ErrorMessage"] = $reader->getAttribute("ErrorMessage");
-                           $this->responseAttributes["FullError"] = $reader->getAttribute("FullError");
-                           break;
+                        case "Result":
+                            $this->responseAttributes["Code"] = $reader->getAttribute("Code");
+                            $this->responseAttributes["ErrorMessage"] = $reader->getAttribute("ErrorMessage");
+                            $this->responseAttributes["FullError"] = $reader->getAttribute("FullError");
+                            break;
 
-                       case "GlobalVars":
-                           if($reader->hasAttributes) {
-                               while($reader->moveToNextAttribute()) {
-                                   $this->params[$reader->name] = $reader->value;
-                               }
-                           }
-                           break;
+                        case "GlobalVars":
+                            if ($reader->hasAttributes) {
+                                while ($reader->moveToNextAttribute()) {
+                                    $this->params[$reader->name] = $reader->value;
+                                }
+                            }
+                            break;
 
-                       case "DataTable":
-                           $dataTable = new DataTable();
-                           $dataTable->setTableName($reader->getAttribute("Name"));
-                           $dataTable->setTableHeaders($reader->getAttribute("Headers"));
+                        case "DataTable":
+                            $dataTable = new DataTable();
+                            $dataTable->setTableName($reader->getAttribute("Name"));
+                            $dataTable->setTableHeaders($reader->getAttribute("Headers"));
 
-                           while($reader->moveToNextAttribute()) {
-                               if ("Name" != $reader->name && "Headers" != $reader->name) {
-                                   $dataTable->setTableParams($reader->name, $reader->value);
-                               }
-                           }
+                            while ($reader->moveToNextAttribute()) {
+                                if ("Name" != $reader->name && "Headers" != $reader->name) {
+                                    $dataTable->setTableParams($reader->name, $reader->value);
+                                }
+                            }
 
-                           $this->tables[$dataTable->getTableName()] = $dataTable;
-                           break;
+                            $this->tables[$dataTable->getTableName()] = $dataTable;
+                            break;
 
-                       case "Row":
-                           $row = $reader->readString();
-                           $dataTable->setTableRow($row);
-                           break;
+                        case "Row":
+                            $row = $reader->readString();
+                            $dataTable->setTableRow($row);
+                            break;
                     }
                 }
             } else {
@@ -115,13 +101,26 @@ class Response {
         }
     }
 
-    # Returns the response's attributes
-    public function getResponseAttributes() {
+    public function constructFailedResponse($code = NULL, $errorMessage = NULL)
+    {
+        $this->responseAttributes = array();
+        $this->params = array();
+        $this->tables = array();
+
+        if ($code != NULL && $errorMessage != NULL) {
+            $this->responseAttributes["Code"] = $code;
+            $this->responseAttributes["ErrorMessage"] = $errorMessage;
+            $this->responseAttributes["FullError"] = $errorMessage;
+        }
+    }
+
+    public function getResponseAttributes()
+    {
         return $this->responseAttributes;
     }
 
-    # Indicates whether the response is OK
-    public function isOK() {
+    public function isOK()
+    {
         if ("OK" == $this->responseAttributes["Code"]) {
             return "true";
         }
@@ -129,28 +128,28 @@ class Response {
         return "false";
     }
 
-    # Returns the response's code - "OK" represents predicted state, all else represents an error
-    public function getCode() {
+    public function getCode()
+    {
         return $this->responseAttributes["Code"];
     }
 
-    # Returns the response's error message if any
-    public function getErrorMessage() {
+    public function getErrorMessage()
+    {
         return $this->responseAttributes["ErrorMessage"];
     }
 
-    # Returns the response's full error message if any
-    public function getFullError() {
+    public function getFullError()
+    {
         return $this->responseAttributes["FullError"];
     }
 
-    # Returns the response global parameters
-    public function getGlobalParams() {
+    public function getGlobalParams()
+    {
         return $this->params;
     }
 
-    # Returns a specific parameter from the global parameters
-    public function getParamForName($name) {
+    public function getParamForName($name)
+    {
         if (!array_key_exists($name, $this->params)) {
             return NULL;
         }
@@ -158,20 +157,17 @@ class Response {
         return $this->params[$name];
     }
 
-    # Returns the response's data tables
-    public function getTables() {
+    public function getTables()
+    {
         return $this->tables;
     }
 
-    # Returns a specific data table from the response's data tables
-    public function getTableForName($name) {
+    public function getTableForName($name)
+    {
         if (!array_key_exists($name, $this->tables)) {
             return new DataTable();
         }
 
         return $this->tables[$name];
     }
-
 }
-
-?>
